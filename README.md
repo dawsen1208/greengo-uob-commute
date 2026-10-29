@@ -1,5 +1,9 @@
 # GreenGo
 
+## Map and weather
+
+`dist/context.js` adds a Leaflet/OpenStreetMap map, approximate area/building points, manual or map-click origin selection, UK commute dates and hourly Open-Meteo forecasts. Map marker coordinates are illustrative and must be verified against actual building entrances. No routing or accessibility verification is implied. Weather queries send the selected coordinate to Open-Meteo only when requested; no device location is read. Forecasts cover today through six days ahead, use UNIX timestamps converted with Europe/London for DST, and are cleared when the location, date or class time changes. The planner still uses simulated journey times and timetables, explicitly labelled separately from forecast data.
+
 ## Cloudflare backend
 
 `wrangler.jsonc` serves `dist/` plus `backend/worker.mjs` on the existing Worker. Keep the Cloudflare Git build command `npx wrangler deploy`, root `/`. Pushes to main trigger Cloudflare's Git integration separately from GitHub Pages.
