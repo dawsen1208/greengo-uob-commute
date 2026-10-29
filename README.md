@@ -1,5 +1,15 @@
 # GreenGo
 
+## Cloudflare backend
+
+`wrangler.jsonc` serves `dist/` plus `backend/worker.mjs` on the existing Worker. Keep the Cloudflare Git build command `npx wrangler deploy`, root `/`. Pushes to main trigger Cloudflare's Git integration separately from GitHub Pages.
+
+Add runtime Secrets `TFWM_APP_ID` and `TFWM_APP_KEY` to the existing Worker. Never put them in build variables or static assets. `/api/health` reports configuration presence only. `/api/stops?q=Selly%20Oak` and `/api/arrivals?stopId=...` proxy the TfWM provider via HTTPS with validation, timeouts and short caching. CORS is not authentication: public endpoints consume provider quota and need production abuse monitoring/rate controls before broad use.
+
+The bilingual bus panel queries actual provider responses independently of the illustrative journey calculator. Empty predictions are not evidence of normal operation or cancellation. Rail, weather and full multimodal routing remain unconnected.
+
+Run `node --test backend/worker.test.mjs` to test credential redaction, validation and provider responses.
+
 Bilingual campus sustainable travel prototype. Open `dist/versions.html` to choose Chinese or English. No build dependencies are required.
 
 ## Scope
