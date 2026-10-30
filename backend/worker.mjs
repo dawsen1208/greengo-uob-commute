@@ -10,7 +10,7 @@ export default {
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers:{...headers,'Access-Control-Allow-Methods':'GET, OPTIONS'}});
   if(request.method!=='GET')return reply({error:'method_not_allowed'},405);
   const configured=Boolean(env.TFWM_APP_ID&&env.TFWM_APP_KEY);
-  if(url.pathname==='/api/health')return reply({ok:true,tfwmConfigured:configured,version:'diagnostic-stages-v1'});
+  if(url.pathname==='/api/health')return reply({ok:true,tfwmConfigured:configured,version:'tfwm-v1'});
   let upstreamPath;
   if(url.pathname==='/api/stops'){
    const q=(url.searchParams.get('q')||'').trim();
@@ -24,14 +24,11 @@ export default {
   if(!configured)return reply({error:'credentials_not_configured'},503);
   const cacheKey=new Request('https://greengo-cache.invalid'+upstreamPath),cache=globalThis.caches?.default;
   const cached=await cache?.match(cacheKey);if(cached)return reply(await cached.json());
-  const diagnostic=url.searchParams.get('diagnostic')==='stages' && url.pathname==='/api/stops' && url.searchParams.get('q')==='Selly Oak' && Date.now()<1793360047449;
-  const target=new URL(upstreamPath,diagnostic?'http://api.tfwm.org.uk':'https://api.tfwm.org.uk');
+  const target=new URL(upstreamPath,'https://api.tfwm.org.uk');
   target.searchParams.set('app_id',env.TFWM_APP_ID);target.searchParams.set('app_key',env.TFWM_APP_KEY);target.searchParams.set('formatter','json');
   if(url.pathname==='/api/stops')target.searchParams.set('maxResults','15');
   try{
-   let response;
-   try{response=await fetch(target,{headers:{Accept:'application/json'},signal:AbortSignal.timeout(10000),redirect:'manual'});}catch(e){return reply({error:'provider_connection_failed',stage:'connect',category:e.name==='TimeoutError'?'timeout':e.name==='TypeError'?'network_or_protocol':'connection_error'},502);}
-   if(diagnostic){const type=response.headers.get('content-type')||'';const text=await response.text();let parsed;try{parsed=JSON.parse(text);}catch{} const loc=response.headers.get('location');let redirectHost=null;try{redirectHost=loc?new URL(loc,target).host:null;}catch{}return reply({stage:'response',providerStatus:response.status,contentType:type,bodyLength:text.length,isJson:parsed!==undefined,jsonShape:Array.isArray(parsed)?'array':parsed&&typeof parsed==='object'?'object':typeof parsed,redirectHost,authenticationMessage:/authentication parameters missing|invalid app|authentication failed|access denied/i.test(text)?'authentication_related':null});}
+   const response=await fetch(target,{headers:{Accept:'application/json'},signal:AbortSignal.timeout(10000),redirect:'error'});
    if(!response.ok)return reply({error:response.status===401||response.status===403?'provider_auth_failed':'provider_unavailable',providerStatus:response.status},502);
    const raw=await response.json();
    const candidates=Array.isArray(raw)?raw:raw.matches??raw.stopPoints??raw.arrivals;
