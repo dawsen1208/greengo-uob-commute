@@ -1,4 +1,3 @@
-let diagnosticUsed=false;
 const ORIGINS=new Set(['https://dawsen1208.github.io','https://greengo-uob-commute.dawsen1208.workers.dev']);
 export default {
  async fetch(request,env,ctx){
@@ -11,7 +10,7 @@ export default {
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers:{...headers,'Access-Control-Allow-Methods':'GET, OPTIONS'}});
   if(request.method!=='GET')return reply({error:'method_not_allowed'},405);
   const configured=Boolean(env.TFWM_APP_ID&&env.TFWM_APP_KEY);
-  if(url.pathname==='/api/health')return reply({ok:true,tfwmConfigured:configured,version:'http-diagnostic-v1'});
+  if(url.pathname==='/api/health')return reply({ok:true,tfwmConfigured:configured,version:'tfwm-v1'});
   let upstreamPath;
   if(url.pathname==='/api/stops'){
    const q=(url.searchParams.get('q')||'').trim();
@@ -25,10 +24,7 @@ export default {
   if(!configured)return reply({error:'credentials_not_configured'},503);
   const cacheKey=new Request('https://greengo-cache.invalid'+upstreamPath),cache=globalThis.caches?.default;
   const cached=await cache?.match(cacheKey);if(cached)return reply(await cached.json());
-  const diagnostic=url.searchParams.get('diagnostic')==='http-once' && url.pathname==='/api/stops' && url.searchParams.get('q')==='Selly Oak';
-  if(diagnostic&&(diagnosticUsed||Date.now()>1793359437573))return reply({error:'diagnostic_expired_or_used'},409);
-  if(diagnostic)diagnosticUsed=true;
-  const target=new URL(upstreamPath,diagnostic?'http://api.tfwm.org.uk':'https://api.tfwm.org.uk');
+  const target=new URL(upstreamPath,'https://api.tfwm.org.uk');
   target.searchParams.set('app_id',env.TFWM_APP_ID);target.searchParams.set('app_key',env.TFWM_APP_KEY);target.searchParams.set('formatter','json');
   if(url.pathname==='/api/stops')target.searchParams.set('maxResults','15');
   try{
