@@ -1,5 +1,9 @@
 # GreenGo
 
+## Timetable-to-classroom direction
+
+The prototype now starts with a manually entered class and links its date/time/building to commute and weather inputs. A staged arrival card includes the station/gate, building, and user-supplied floor/room notes. There is no university account integration, verified room directory or indoor turn-by-turn routing. Class entries stay in memory unless local browser storage is explicitly selected, and can be cleared. Research materials in `research/week5/` frame cross-tool fragmentation as a hypothesis to investigate, not an established finding.
+
 ## Map and weather
 
 `dist/context.js` adds a Leaflet/OpenStreetMap map, approximate area/building points, manual or map-click origin selection, UK commute dates and hourly Open-Meteo forecasts. Map marker coordinates are illustrative and must be verified against actual building entrances. No routing or accessibility verification is implied. Weather queries send the selected coordinate to Open-Meteo only when requested; no device location is read. Forecasts cover today through six days ahead, use UNIX timestamps converted with Europe/London for DST, and are cleared when the location, date or class time changes. The planner still uses simulated journey times and timetables, explicitly labelled separately from forecast data.

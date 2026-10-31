@@ -10,4 +10,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --check dist/commute.js && node --check dist/transit.js && node --check dist/context.js && node --check backend/worker.mjs && node --test backend/worker.test.mjs
+      - run: node --check dist/classes.js && node --check dist/campus.js && node --check dist/commute.js && node --check dist/transit.js && node --check dist/context.js && node --check backend/worker.mjs && node --test backend/worker.test.mjs
