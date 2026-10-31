@@ -1,4 +1,5 @@
-(()=>{
+(async()=>{
+ if(!document.getElementById('proactive'))await new Promise(resolve=>{const observer=new MutationObserver(()=>{if(document.getElementById('proactive')){observer.disconnect();resolve();}});observer.observe(document.body,{childList:true,subtree:true});});
  const en=document.documentElement.lang==='en',t=(a,b)=>en?b:a,$=id=>document.getElementById(id);
  const old=document.querySelector('main.shell');const app=document.createElement('div');app.className='gg-app';app.innerHTML=`<aside class="gg-sidebar"><a class="gg-logo" href="#/home"><span class="gg-symbol">g↗</span>GreenGo<span class="gg-period">.</span></a><p class="gg-school">BIRMINGHAM · CAMPUS EDITION</p><nav class="gg-nav" aria-label="${t('主导航','Main navigation')}"></nav><div class="gg-sidebar-bottom"><span class="gg-dot"></span> ${t('从课表到教室','From timetable to classroom')}<p>${t('研究交互原型','INTERACTIVE RESEARCH PROTOTYPE')}</p></div></aside><main class="gg-main"><header class="gg-header"><div><span class="gg-overline">GREENGO / <span id="ggBreadcrumb"></span></span><p id="ggDate"></p></div><div class="gg-header-right"><span class="gg-campus-chip">EDGBASTON</span><a href="${en?'index.html':'en.html'}">${en?'中文':'English'} ↗</a></div></header><div id="ggPages"></div></main>`;document.body.prepend(app);
  const icons={home:'◷',classes:'▦',journey:'↗',settings:'☷'};
@@ -18,3 +19,4 @@
  const alert=$('reminderAlert');new MutationObserver(()=>{const box=$('ggHomeAlert');box.replaceChildren();if(!alert.hidden){const card=document.createElement('div');card.className='gg-alert-card';const h=document.createElement('h3');h.textContent=$('alertTitle').textContent;const p=document.createElement('p');p.textContent=$('alertText').textContent;const a=document.createElement('a');a.href='#/settings';a.textContent=t('查看并处理提醒 →','Review reminder →');card.append(h,p,a);box.append(card);}}).observe(alert,{attributes:true,childList:true,subtree:true});
  $('reviewJourney').addEventListener('click',()=>{location.hash='/journey';});$('clearClasses').addEventListener('click',()=>{$('ggNextSummary').innerHTML=`<h2>${t('尚无课程','No classes yet')}</h2><p>${t('添加一节课开始。','Add a class to begin.')}</p>`;});
 })();
+
