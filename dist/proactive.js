@@ -23,6 +23,7 @@
  $('snoozeReminder').onclick=()=>{snoozeUntil=Date.now()+300000;lastAlert='';hide();};$('ignoreReminder').onclick=()=>{ignored=true;hide();};$('reviewJourney').onclick=()=>{$('arrivalFlow').scrollIntoView({behavior:'smooth'});};
  $('demoDeparture').onclick=()=>{$('demoResult').textContent=t('演示：临近建议出发时间，可查看行程、稍后提醒或忽略。未修改真实时钟或提醒状态。','DEMO: departure is approaching. Review, snooze or ignore are available in real alerts. No clock or reminder state changed.');};$('demoRain').onclick=()=>{$('demoResult').textContent=t('演示：降雨概率由低于50%变为≥50%，建议出发时间提前所设雨天余量；真实天气未被修改。','DEMO: rain probability crosses 50%; departure shifts earlier by the configured rain buffer. Actual weather is unchanged.');};
  ['building','classStart','commuteDate','originLat','originLon'].forEach(id=>$(id).addEventListener('change',()=>{resetWeather();hide();check();}));new MutationObserver(()=>{if(!$('classList').querySelector('article')){course=null;signature='';resetWeather();check();}}).observe($('classList'),{childList:true});
+ new MutationObserver(()=>{if($('classJourney').textContent===t('选择一节课生成衔接计划。','Select a class to connect the journey.')){course=null;signature='';resetWeather();hide();check();}}).observe($('classJourney'),{childList:true,subtree:true});
  setInterval(()=>{check();weather();},30000);document.addEventListener('visibilitychange',()=>{if(!document.hidden){check();weather();}});check();
 })();
 
