@@ -1,4 +1,4 @@
-# From timetable to classroom — questionnaire v0.2
+# From timetable to classroom — questionnaire v0.3
 
 Status: pilot-ready draft revised around timetable-to-classroom journeys. Do not distribute as final until the team fills the bracketed fields, checks course research requirements and completes a pilot. Estimated time: 8–10 minutes; verify during pilot. Q19–Q22 are placed before Q16 deliberately; question IDs are retained for version tracking.
 
@@ -105,6 +105,25 @@ Q17. Overall, how well do your existing tools meet your campus travel needs? [on
 Q18. Is there anything else you would like us to understand about travelling to campus? [optional text]
 
 ## Closing
+
+## Optional concept section: proactive advice (after all current-experience questions)
+
+Introduce neutrally: “Consider a service that uses an entered class time, a travel estimate and a weather forecast to suggest when to leave. It may display an alert without a further request. This is a concept, not a proven benefit.”
+
+Q23. In the past four weeks, did an existing travel or calendar reminder affect a decision about leaving for a class? [one]
+- Yes / No / Did not use reminders / Cannot remember
+Optional: What happened, if anything? Do not include personal timetable details.
+
+Q24. Which events, if any, would warrant an unsolicited alert? [select all]
+- Approaching a planned departure time / A substantial change to the expected journey / A weather change affecting the travel period / Missing or out-of-date journey data / None [exclusive] / Not sure [exclusive] / Other [text]
+
+Q25. Which controls would matter most? [choose up to three]
+- Switch alerts off / Snooze / Ignore the current class / Set advance notice / Explanation and data timestamp / Limit repeated alerts / Choose which events trigger alerts / None [exclusive] / Not sure [exclusive] / Other [text]
+
+Q26. What concerns, if any, would affect using proactive advice? [optional text]
+Potential prompts only after an initial answer: unnecessary interruptions, wrong estimates, privacy, missing an alert or over-reliance. Do not imply that alerts are necessarily helpful or harmful.
+
+These extra questions increase length; verify completion time in pilot and remove low-value questions rather than assuming the earlier 8–10 minute estimate still applies. Keep behaviour questions before concept prompts. This section is not an effectiveness evaluation.
 
 Thank you. If you are interested in an optional follow-up interview, use [separate recruitment link]. Contact details collected there must be stored separately and not linked to questionnaire answers. Participation does not require joining an interview.
 
