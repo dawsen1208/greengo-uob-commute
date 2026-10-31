@@ -16,8 +16,9 @@
  const routes=$('routes');const heading=document.createElement('div');heading.className='travel-options-heading';heading.innerHTML=`<h3>${t('对比通勤方案','Compare the options')}</h3><span>${t('示例时长 · 非实时班次','Illustrative times · not live services')}</span>`;routes.before(heading);
  const other=document.createElement('details');other.className='travel-more-routes';const os=document.createElement('summary');os.textContent=t('展开其余 4 种方案','View 4 more options');const otherGrid=document.createElement('div');otherGrid.className='travel-secondary-options';other.append(os,otherGrid);routes.after(other);
  function arrange(){otherGrid.replaceChildren();const cards=Array.from(routes.children);cards.forEach((card,i)=>{card.classList.add('travel-option');const b=card.querySelector('b');if(b){const label=document.createElement('span');label.className='travel-option-index';label.textContent=String(i+1).padStart(2,'0');card.prepend(label);}if(i>=2)otherGrid.append(card);});os.textContent=t(`展开其余 ${Math.max(cards.length-2,0)} 种方案`,`View ${Math.max(cards.length-2,0)} more options`);other.hidden=cards.length<=2;}
- const observer=new MutationObserver(()=>{observer.disconnect();arrange();observer.observe(routes,{childList:true});});
- arrange();observer.observe(routes,{childList:true});
+ function addSelection(){document.querySelectorAll('.travel-option').forEach(card=>{const mode=card.dataset.mode;if(!mode)return;const button=document.createElement('button');button.type='button';button.className='outline';button.textContent=t('选择并衔接校园步行 →','Choose & connect campus walk →');button.disabled=card.dataset.unavailable==='true';button.onclick=()=>{document.querySelectorAll('.travel-option button').forEach(b=>b.setAttribute('aria-pressed','false'));button.setAttribute('aria-pressed','true');window.dispatchEvent(new CustomEvent('greengo:mode-selected',{detail:{mode}}));document.querySelector('#arrivalFlow nav button:nth-child(3)')?.click();};card.append(button);});}
+ const observer=new MutationObserver(()=>{observer.disconnect();arrange();addSelection();observer.observe(routes,{childList:true});});
+ arrange();addSelection();observer.observe(routes,{childList:true});
  return {routes,arrange};
  }
  function start(){const r=init();if(!r)return false;return true;}
