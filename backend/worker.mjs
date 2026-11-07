@@ -10,7 +10,23 @@ export default {
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers:{...headers,'Access-Control-Allow-Methods':'GET, OPTIONS'}});
   if(request.method!=='GET')return reply({error:'method_not_allowed'},405);
   const configured=Boolean(env.TFWM_APP_ID&&env.TFWM_APP_KEY);
-  if(url.pathname==='/api/health')return reply({ok:true,tfwmConfigured:configured,version:'tfwm-v1'});
+  const tapiConfigured=Boolean(env.app_id&&env.app_key);
+  if(url.pathname==='/api/health')return reply({ok:true,tfwmConfigured:configured,transportApiConfigured:tapiConfigured,version:'transport-v2'});
+  if(url.pathname==='/api/transport/train'||url.pathname==='/api/transport/bus'){
+   const train=url.pathname.endsWith('/train'),id=url.searchParams.get(train?'station':'stopId')||(train?'UNI':'');
+   if(train?!['UNI','BHM','FWY','SLY'].includes(id):!/^[a-zA-Z0-9]{8,16}$/.test(id))return reply({error:'invalid_transport_location'},400);
+   if(!tapiConfigured)return reply({error:'transport_credentials_not_configured'},503);
+   const cache=globalThis.caches?.default,cacheKey=new Request('https://greengo-cache.invalid/tapi/'+(train?'train/':'bus/')+id),hit=await cache?.match(cacheKey);if(hit)return reply({...await hit.json(),cached:true});
+   const target=new URL(train?'/v3/uk/train/station_timetables/'+id+'.json':'/v3/uk/bus/stop/'+id+'/live.json','https://transportapi.com');
+   target.searchParams.set('app_id',env.app_id);target.searchParams.set('app_key',env.app_key);if(train)target.searchParams.set('live','true');
+   try{const r=await fetch(target,{headers:{Accept:'application/json'},signal:AbortSignal.timeout(12000),redirect:'error'});
+    if(!r.ok)return reply({error:[401,403].includes(r.status)?'transport_auth_or_plan_denied':r.status===429?'transport_quota_exceeded':'transport_provider_unavailable',providerStatus:r.status},502);
+    const raw=await r.json(),group=raw.departures;const list=Array.isArray(group)?group:group&&typeof group==='object'?Object.values(group).flatMap(a=>Array.isArray(a)?a:[]):Array.isArray(raw.services)?raw.services:null;
+    if(!list)return reply({error:'unexpected_transport_response'},502);
+    const clean=x=>String(x??'').slice(0,160);const items=list.slice(0,20).map(x=>({line:clean(x.line??x.operator_name??x.operator),destination:clean(x.destination_name??x.direction??x.destination),scheduled:clean(x.aimed_departure_time??x.departure_time),expected:clean(x.expected_departure_time??x.best_departure_estimate),status:clean(x.status),platform:clean(x.platform),date:clean(x.date),live:x.expected_departure_time!=null||x.best_departure_estimate!=null}));
+    const body={source:'TransportAPI',location:id,mode:train?'train':'bus',fetchedAt:new Date().toISOString(),cached:false,items};if(cache)ctx.waitUntil(cache.put(cacheKey,new Response(JSON.stringify(body),{headers:{'Cache-Control':'public, max-age=120'}})));return reply(body);
+   }catch{return reply({error:'transport_provider_unavailable'},502);}
+  }
   let upstreamPath;
   if(url.pathname==='/api/stops'){
    const q=(url.searchParams.get('q')||'').trim();
@@ -41,3 +57,4 @@ export default {
   }catch{return reply({error:'provider_unavailable'},502);}
  }
 };
+
