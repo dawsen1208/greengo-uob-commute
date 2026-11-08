@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {suggestBusOrigin}from '../dist/bus-origin.mjs';
+globalThis.window={};await import('../dist/data/bus-routes.js');
+test('Broderick uses campus-bound stop order; Selly Oak uses inbound order',()=>{for(const l of window.GreenGoBusRoutes.lines){for(const [area,direction]of [['Broderick House','O'],['Selly Oak','I']]){const r=suggestBusOrigin(l.patterns,area);assert.ok(r);const p=l.patterns.find(p=>p.id===r.pattern);assert.equal(p.direction,direction);assert.ok(p.stops.findIndex(s=>s.id===r.board)<p.stops.findIndex(s=>s.id===r.alight));if(area==='Broderick House')assert.equal(p.stops.find(s=>s.id===r.board).name,'St James Rd');}}});
+test('unknown areas do not invent a boarding stop',()=>assert.equal(suggestBusOrigin(window.GreenGoBusRoutes.lines[0].patterns,'Unknown'),null));
